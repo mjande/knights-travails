@@ -7,7 +7,6 @@ class Board
     @prev_position = @origin
     create_bottom_row
     1.upto(7) { |row| create_row(row) }
-    print_board_subset
   end
 
   # Generate bottom row that is doubly linked horizontally
@@ -47,6 +46,23 @@ class Board
       position_below = position_below.up
     end
     position_below
+  end
+
+  def add_knight_moves_to_board
+    0.up_to(7) do |col|
+      0.up_to(7) do |row|
+        position = search_for_position(col, row)
+        position.add_knight_moves
+      end
+    end
+  end
+
+
+  def search_for_position(col, row)
+    current_position = @origin
+    current_position = current_position.right until current_position.col == col
+    current_position = current_position.up until current_position.row == row
+    current_position
   end
 
   def print_board_subset

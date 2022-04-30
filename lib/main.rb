@@ -1,3 +1,4 @@
-require_relative 'board'
+require_relative 'knight'
 
-board = Board.new
+knight = Knight.new
+knight.knight_moves([3, 7], [5, 4])
