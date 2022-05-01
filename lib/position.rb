@@ -1,18 +1,13 @@
 class Position
-  attr_reader :col, :row
+  attr_reader :col, :row, :possible_moves, :parent
   attr_accessor :up_right, :right_up, :right_down, :down_right, :down_left, :left_down, :left_up, :up_left
 
-  def initialize(col, row)
+  def initialize(col, row, parent)
+    @parent = parent
     @col = col
     @row = row
-    @up_right = nil
-    @right_up = nil
-    @right_down = nil
-    @down_right = nil
-    @down_left = nil
-    @left_down = nil
-    @left_up = nil
-    @up_left = nil
+    assign_possible_moves_right
+    assign_possible_moves_left
     @possible_moves = [@up_right, @right_up, @right_down, @down_right, @down_left, @left_down, @left_up, @up_left]
   end
 
@@ -20,7 +15,21 @@ class Position
     "[#{col}, #{row}]"
   end
 
-  def print_moves
-    @possible_moves.each { |position| puts "[#{position.col}, #{position.row}" }
+  def check_move(col, row)
+    col.negative? || col > 7 || row.negative? || row > 7
+  end
+
+  def assign_possible_moves_right
+    @up_right = [col + 1, row + 2] unless check_move(col + 1, row + 2)
+    @right_up = [col + 2, row + 1] unless check_move(col + 2, row + 1)
+    @right_down = [col + 2, row - 1] unless check_move(col + 2, row - 1)
+    @down_right = [col + 1, row - 2] unless check_move(col + 1, row - 2)
+  end
+
+  def assign_possible_moves_left
+    @down_left = [col - 1, row - 2] unless check_move(col - 1, row - 2)
+    @left_down = [col - 2, row - 1] unless check_move(col - 2, row - 1)
+    @left_up = [col - 2, row + 1] unless check_move(col - 2, row + 1)
+    @up_left = [col - 1, row + 2] unless check_move(col - 1, row + 1)
   end
 end
