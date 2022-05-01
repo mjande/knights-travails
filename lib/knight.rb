@@ -1,27 +1,33 @@
+# frozen_string_literal: true
+
 require_relative 'board'
 require_relative 'position'
 require 'pry-byebug'
 
+# Includes knight_moves to calculate shortest path from start to end. The class
+# accomplishes this by interacting with Position class to determine possible
+# moves, and looping through a breadth-level iteration to find the shortest path.
 class Knight
   def initialize(board)
+    # Board assignment (and Board class) not actually necessary for the final
+    # working version, but kept for future reference for Chess project.
     @board = board
     @queue = []
   end
 
   def knight_moves(start_position, end_position)
-    @board.board_array[start_position[1]][start_position[0]] = 'N'
     @start_position = start_position
-    @end_col = end_position[0]
-    @end_row = end_position[1]
-    position = Position.new(start_position[0], start_position[1], nil)
-    @queue.push(position)
+    @end_position = end_position
+    @queue.push(Position.new(start_position[0], start_position[1], nil))
     @children = 1
+    search_for_position
+  end
+
+  def search_for_position
     loop do
-      # For the total number of children in level
+      # For the total number of children in level (added in method below)
       @children.times do
-        # Add next position from queue to variable
         position = @queue.shift
-        # Check possible moves of that position
         if check_possible_moves(position)
           print_path(position)
           return
@@ -46,13 +52,13 @@ class Knight
     position.possible_moves.any? do |move|
       next if move.nil?
 
-      move[0] == @end_col && move[1] == @end_row
+      move[0] == @end_position[0] && move[1] == @end_position[1]
     end
   end
 
   def print_path(pen_position)
     position = pen_position
-    return_array = ["[#{@end_col}, #{@end_row}]"]
+    return_array = ["[#{@end_position[0]}, #{@end_position[1]}]"]
     until position.parent.nil?
       return_array << position
       position = position.parent
