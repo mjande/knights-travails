@@ -4,69 +4,58 @@ require 'pry-byebug'
 class Board
   def initialize
     @origin = Position.new(0, 0)
-    @prev_position = @origin
-    create_bottom_row
-    1.upto(7) { |row| create_row(row) }
-  end
-
-  # Generate bottom row that is doubly linked horizontally
-  def create_bottom_row
-    7.times do |col|
-      position = Position.new(col + 1, 0)
-      position.left = @prev_position
-      @prev_position.right = position
-      @prev_position = position
-    end
-  end
-
-  def create_row(row)
-    position_below = define_position_below(row)
-    8.times do |col|
-      position = Position.new(col, row)
-      position_below = set_up_and_down_pointers(position, position_below)
-      unless col.zero?
-        position.left = @prev_position
-        @prev_position.right = position
-      end
-      @prev_position = position
-    end
-  end
-
-  def set_up_and_down_pointers(position, position_below)
-    # binding.pry
-    position.down = position_below
-    position_below.up = position
-    # Return position below right to reassign position below
-    position_below.right
-  end
-
-  def define_position_below(row)
-    position_below = @origin
-    (row - 1).times do
-      position_below = position_below.up
-    end
-    position_below
-  end
-
-  def add_knight_moves_to_board
-    0.up_to(7) do |col|
-      0.up_to(7) do |row|
-        position = search_for_position(col, row)
-        position.add_knight_moves
+    @all_positions = [@origin]
+    0.upto(7) do |col|
+      0.upto(7) do |row|
+        @all_positions << Position.new(col, row)
       end
     end
+    assign_knight_moves
+  end
+
+  def assign_knight_moves
+    @all_positions.each do |position|
+      assign_moves_up(position)
+      assign_moves_right(position)
+      assign_moves_down(position)
+      assign_moves_left(position)
+    end
   end
 
 
-  def search_for_position(col, row)
-    current_position = @origin
-    current_position = current_position.right until current_position.col == col
-    current_position = current_position.up until current_position.row == row
-    current_position
+  def assign_moves_up(position)
+    position.up_left = @all_positions.find do |move|
+      (position.col - 1) == move.col && (position.row + 2) == move.row
+    end
+    position.up_right = @all_positions.find do |move|
+      (position.col + 1) == move.col && (position.row + 2) == move.row
+    end
   end
 
-  def print_board_subset
-    puts "#{@origin.up} #{@origin.up.right}"
-    puts "#{@origin} #{@origin.right}"
+  def assign_moves_right(position)
+    position.right_up = @all_positions.find do |move|
+      (position.col + 2) == move.col && (position.row + 1) == move.row
+    end
+    position.right_down = @all_positions.find do |move|
+      (position.col + 2) == move.col && (position.row - 1) == move.row
+    end
+  end
+
+  def assign_moves_down(position)
+    position.down_left = @all_positions.find do |move|
+      (position.col - 1) == move.col && (position.row - 2) == move.row
+    end
+    position.down_right = @all_positions.find do |move|
+      (position.col + 1) == move.col && (position.row - 2) == move.row
+    end
+  end
+
+  def assign_moves_left(position)
+    position.left_up = @all_positions.find do |move|
+      (position.col - 2) == move.col && (position.row + 1) == move.row
+    end
+    position.left_down = @all_positions.find do |move|
+      (position.col - 2) == move.col && (position.row - 1) == move.row
+    end
   end
 end
