@@ -2,13 +2,6 @@ require_relative 'board'
 require_relative 'position'
 require 'pry-byebug'
 
-# 1. Create knight and place at coordinates given
-# 2. Start generating tree with possible turn 1 moves 
-# 3. Breadth-search tree for possible moves matching desired destination
-# 4. If no match, generate next level
-# 5. Continue 4 + 5 until a match is found
-# 6. Return array of each position from start to end along branches
-
 class Knight
   def initialize(board)
     @board = board
@@ -27,16 +20,12 @@ class Knight
       # For the total number of children in level
       @children.times do
         # Add next position from queue to variable
-        puts "Children: #{@children}"
-        puts @queue
         position = @queue.shift
         # Check possible moves of that position
         if check_possible_moves(position)
-          puts 'Found match'
           print_path(position)
-          return 
+          return
         else
-          puts 'No match'
           add_possible_moves_to_queue(position)
         end
         @children -= 1
@@ -45,7 +34,6 @@ class Knight
   end
 
   def add_possible_moves_to_queue(position)
-    puts 'Adding moves to queue'
     position.possible_moves.each do |move|
       next if move.nil?
 
@@ -55,7 +43,6 @@ class Knight
   end
 
   def check_possible_moves(position)
-    puts "Checking children of #{position}"
     position.possible_moves.any? do |move|
       next if move.nil?
 
@@ -70,7 +57,8 @@ class Knight
       return_array << position
       position = position.parent
     end
-    return_array << "#{@start_position}"
+    return_array << @start_position.to_s
+    puts "You made it in #{return_array.length - 1} moves! Here is your path:"
     puts return_array.reverse
   end
 end
